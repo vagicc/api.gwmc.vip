@@ -46,6 +46,38 @@ luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git push
 remote: Resolving deltas: 100% (1/1), completed with 1 local object.
 To github.com:vagicc/api.gwmc.vip.git
    2620a42..9bd1897  luck -> luck
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git branch 
+* luck
+  main
+  product
+  test
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git switch test
+切换到分支 'test'
+您的分支与上游分支 'origin/test' 一致。
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git pull
+已经是最新的。
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git merge luck --squash 
+更新 2620a42..52d0b04
+Fast-forward
+压缩提交 -- 未更新 HEAD
+ README.md | 50 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git push
+Everything up-to-date
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git commit 
+[test c006bfa] Squashed commit of the following:
+ 1 file changed, 50 insertions(+)
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git push
+枚举对象: 5, 完成.
+对象计数中: 100% (5/5), 完成.
+使用 8 个线程进行压缩
+压缩对象中: 100% (3/3), 完成.
+写入对象中: 100% (3/3), 1.38 KiB | 1.38 MiB/s, 完成.
+总共 3（差异 1），复用 0（差异 0），包复用 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To github.com:vagicc/api.gwmc.vip.git
+   2620a42..c006bfa  test -> test
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 `
