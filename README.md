@@ -35,7 +35,17 @@ luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git branch
   product
   test
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git add -A -- /home/luck/Code/Rust/api_gwmc_vip/README.md
-luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git commit -a -m "开发说明"
+luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git push
+枚举对象: 5, 完成.
+对象计数中: 100% (5/5), 完成.
+使用 8 个线程进行压缩
+压缩对象中: 100% (3/3), 完成.
+写入对象中: 100% (3/3), 1.04 KiB | 1.04 MiB/s, 完成.
+总共 3（差异 1），复用 0（差异 0），包复用 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To github.com:vagicc/api.gwmc.vip.git
+   2620a42..9bd1897  luck -> luck
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 `
