@@ -25,6 +25,10 @@ serde_json = "1.0.79"
 serde_derive = "1.0.136"
 serde = {version = "1.0.136", features = ["derive"] }
 
+# 日志
+env_logger = "0.9.0"
+log = "0.4.16"
+chrono = "0.4.19"
 
 # 错误处理
 error-chain = "0.12.4"

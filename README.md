@@ -12,8 +12,8 @@ test对测试服分支（代码合并到此分支后自自动布署到测试服�
 开发流程：
 先从“test”测试分支拉代码，并创建个人开发分支
 下面创建我个人开发分支“luck”:
-# =====================================================================================
-`
+# ==============
+```bash
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$ git branch
   main
   product
@@ -80,7 +80,7 @@ To github.com:vagicc/api.gwmc.vip.git
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
-`
-# ========================================================================
+```
+# ==========
 原则上一个开发人员只能提交一个个人开发分支到线上
 
