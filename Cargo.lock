@@ -50,6 +50,7 @@ dependencies = [
  "dotenv",
  "env_logger",
  "error-chain",
+ "lazy_static",
  "log",
  "reqwest",
  "select",
