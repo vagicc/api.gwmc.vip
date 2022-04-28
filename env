@@ -8,8 +8,8 @@ key_path=tls/key.rsa
 # cert_path=/etc/letsencrypt/live/xueyigou.cn/fullchain.pem
 # key_path=/etc/letsencrypt/live/xueyigou.cn/privkey.pem
 
-# postgres数据库配置
-DATABASE_URL=postgres://luck:passwd@127.0.0.1:5432/xueyigou
+# postgres数据库配置: DATABASE_URL=mysql://[user[:password]@]host/database_name
+DATABASE_URL=postgres://user:passwd@127.0.0.1:5432/gwmc
 
 # 网址
 BASE_URL=https://127.0.0.1:5898/

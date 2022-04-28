@@ -17,6 +17,7 @@ warp = { version = "0.3.2", features = ["tls","multipart"] }
 # diesel是Rust的ORM(对象关系映射器)和查询构建器
 # diesel为PostgreSQL、Mysql及SQLite提供了开箱即用的支持
 diesel = { version="1.4.8",features=["extras","postgres","r2d2"] }
+#diesel = { version="1.4.7",features=["extras","mysql","r2d2","with-deprecated"] }
 # 加载环境配置文件.env
 dotenv = "0.15.0"
 
@@ -29,6 +30,8 @@ serde = {version = "1.0.136", features = ["derive"] }
 env_logger = "0.9.0"
 log = "0.4.16"
 chrono = "0.4.19"
+
+lazy_static = "1.4.0"
 
 # 错误处理
 error-chain = "0.12.4"

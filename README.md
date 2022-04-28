@@ -3,6 +3,7 @@
 请先把根目录下的“env”文件复制为“.env”文件，再运行
 
 主要基于rust的warp框架+ORM（rust下唯一的好像）diesel
+开发时增删改查数据表时，请看DIESEL.md文件！！！
 
 Git分支说明：
 product分支为生产服务器对应;
