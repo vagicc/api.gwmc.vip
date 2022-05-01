@@ -13,11 +13,45 @@ pub fn get_env(key: &str) -> String {
 /// ```
 /// # use warp::http::StatusCode;
 ///
-/// let mut status_code = warp::http::StatusCode::OK;
-/// let data="data数据返回".to_string();
-/// response_json(status_code, data)
+/// let status_code = warp::http::StatusCode::OK;
+/// let data = "data数据结构".to_string();
+/// let message = "成功".to_string();
+/// rresponse_json(status_code, Some(&data), None);
 /// ```
-pub fn response_json(
+pub fn response_json<T>(
+    status: warp::http::StatusCode,
+    data: Option<&T>,
+    message: Option<String>,
+) -> std::result::Result<impl warp::Reply, warp::Rejection>
+where
+    T: ?Sized + serde::Serialize,
+{
+    use serde::{Deserialize, Serialize};
+    #[derive(Debug, Deserialize, Serialize, Clone)]
+    pub struct RespondData<T>
+    where
+        T: Serialize,
+    {
+        status: u16,
+        message: Option<String>,
+        data: Option<T>,
+    }
+
+    let response = RespondData {
+        status: status.as_u16(),
+        message: message,
+        data: data,
+    };
+
+    let response_string = serde_json::to_string(&response).unwrap().clone();
+
+    Ok(warp::http::Response::builder()
+        .status(status)
+        .header("Content-type", "application/json")
+        .body(response_string))
+}
+
+pub fn _response_json_old(
     status: warp::http::StatusCode,
     data: String,
 ) -> std::result::Result<impl warp::Reply, warp::Rejection> {
@@ -26,7 +60,7 @@ pub fn response_json(
     #[derive(Debug, Deserialize, Serialize, Clone)]
     pub struct RespondData {
         status: u16,
-        data: String,  //message
+        data: String, //message
     }
 
     let response = RespondData {
@@ -42,7 +76,7 @@ pub fn response_json(
         .body(serde_json::to_string(&response).unwrap()))
 }
 
-pub fn response_json_old<T>(
+pub fn _response_json_old_yl<T>(
     status: warp::http::StatusCode,
     data: &T,
 ) -> std::result::Result<impl warp::Reply, warp::Rejection>
@@ -57,7 +91,7 @@ where
         T: ?Sized + Serialize,
     {
         status: u16,
-        data: T,  //message message: Option<String>,
+        data: T, //message message: Option<String>,
     }
 
     let response = RespondData {
