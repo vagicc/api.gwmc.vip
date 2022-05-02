@@ -1,15 +1,33 @@
 use crate::handlers::demo_handler;
-use warp::{filters::BoxedFilter, Filter};
+use warp::Filter;
 
-/* 返回本页所有路由 */
+/*
+返回本页所有路由
+1、POST /url 创建
+2、DELETE /url/xxx 删除
+3、PUT /url/xxx 更新
+4、GET /url/xxx 查看
+*/
 pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    let demo_all = add().or(do_add());
+    let demo_all = list().or(get_demo()).or(add()).or(do_add()).or(delete());
     demo_all
 }
 
 /* 取得demo表数据列表 */
-pub fn list() {
-    let list = warp::get().and(warp::path("demo")).and(warp::path::end());
+pub fn list() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    let list = warp::get()
+        .and(warp::path("demo"))
+        .and(warp::path::end())
+        .and_then(demo_handler::list);
+    list
+}
+
+pub fn get_demo() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::get()
+        .and(warp::path("demo"))
+        .and(warp::path::param())
+        .and(warp::path::end())
+        .and_then(demo_handler::get_demo)
 }
 
 pub fn add() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
@@ -21,10 +39,24 @@ pub fn add() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
 }
 
 pub fn do_add() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    let do_add = warp::post()
+    let do_add_yl = warp::post()
         .and(warp::path!("demo" / "add"))
         .and(warp::path::end())
         .and(warp::body::form())
         .and_then(demo_handler::do_add);
-    do_add
+    let do_add = warp::post()
+        .and(warp::path("demo"))
+        .and(warp::path::end())
+        .and(warp::body::form())
+        .and_then(demo_handler::do_add);
+    do_add.or(do_add_yl)
+}
+
+pub fn delete() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    let delete = warp::delete()
+        .and(warp::path("demo"))
+        .and(warp::path::param())
+        .and(warp::path::end())
+        .and_then(demo_handler::delete_demo);
+    delete
 }

@@ -1,5 +1,5 @@
 use crate::common::response_json;
-use crate::models::demo_model::*;
+use crate::models::demo_model;
 use crate::template::to_html_single;
 use handlebars::to_json;
 use serde::{Deserialize, Serialize};
@@ -9,8 +9,33 @@ use warp::{Rejection, Reply};
 type ResultWarp<T> = std::result::Result<T, Rejection>;
 
 /*  */
-pub async fn list() {
+pub async fn list() -> ResultWarp<impl Reply> {
     log::debug!("取得demo表数据");
+    let list = demo_model::get_list();
+    response_json(warp::http::StatusCode::OK, Some(&list), None)
+}
+
+pub async fn get_demo(id: i32) -> ResultWarp<impl Reply> {
+    log::debug!("取得demo单条数据");
+    let demo = demo_model::get_demo(id);
+
+    response_json(warp::http::StatusCode::OK, Some(&demo), None)
+}
+
+pub async fn delete_demo(id: i32) -> ResultWarp<impl Reply> {
+    log::debug!("删除demo单条数据");
+    let delete_count = demo_model::delete(id);
+
+    let mut message = String::from("删除失败");
+    if delete_count > 0 {
+        message = String::from("删除成功");
+    }
+
+    response_json(
+        warp::http::StatusCode::OK,
+        Some(&delete_count),
+        Some(message),
+    )
 }
 
 /* 输出html表单 */
@@ -57,7 +82,7 @@ pub async fn do_add(form: AddDemoForm) -> ResultWarp<impl Reply> {
     match result {
         Ok(form) => {
             log::debug!("[调试信息] 新增数据{:?}", form);
-            let mut insert_data = NewDemo {
+            let mut insert_data = demo_model::NewDemo {
                 name: form.name,
                 create_time: None,
             };

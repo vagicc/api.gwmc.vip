@@ -6,6 +6,14 @@ pub fn get_env(key: &str) -> String {
     value
 }
 
+/* 打印变量与变量类型 */
+pub fn type_v<T>(t: T)
+where
+    T: std::fmt::Debug,
+{
+    println!("变量值：{:?}  =>类型： {}", t, core::any::type_name::<T>());
+}
+
 /// 定义接口标准返回格式： response.
 ///
 /// # 示例(Examples)

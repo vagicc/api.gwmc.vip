@@ -8,7 +8,7 @@ do_login_new中调用此处出错：
 暂时先不处理，有空记得重新构造此处的函数
  */
 /* 带广告的嵌入式页 */
-pub fn to_html(name: &str, mut data: Map<String, Json>) -> String {
+pub fn _to_html(name: &str, mut data: Map<String, Json>) -> String {
     let mut handlebars = Handlebars::new();
 
     /* 注册html模板 */
@@ -28,7 +28,7 @@ pub fn to_html(name: &str, mut data: Map<String, Json>) -> String {
 }
 
 /* 带广告的嵌入式页 */
-pub fn to_html_ad(name: &str, mut data: Map<String, Json>) -> String {
+pub fn _to_html_ad(name: &str, mut data: Map<String, Json>) -> String {
     let mut handlebars = Handlebars::new();
 
     /* 注册html模板 */
@@ -48,7 +48,7 @@ pub fn to_html_ad(name: &str, mut data: Map<String, Json>) -> String {
 }
 
 /* 基础版嵌入式页 */
-pub fn to_html_base(name: &str, mut data: Map<String, Json>) -> String {
+pub fn _to_html_base(name: &str, mut data: Map<String, Json>) -> String {
     let mut handlebars = Handlebars::new();
 
     /* 注册html模板 */
@@ -88,6 +88,6 @@ pub fn to_html_single(tpl_name: &str, mut data: Map<String, Json>) -> String {
 这不是你应该轻易做的事情。 通过泄漏String的内存，我们保证内存永远不会被释放（因此泄漏）。
 因此，对内部对象的任何引用都可以解释为具有'static生命周期”。
 */
-pub fn string_to_static_str(s: String) -> &'static str {
+pub fn _string_to_static_str(s: String) -> &'static str {
     Box::leak(s.into_boxed_str())
 }
