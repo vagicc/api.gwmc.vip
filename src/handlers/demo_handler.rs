@@ -22,6 +22,16 @@ pub async fn get_demo(id: i32) -> ResultWarp<impl Reply> {
     response_json(warp::http::StatusCode::OK, Some(&demo), None)
 }
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct UpdateForm {
+    pub name: String,
+}
+pub async fn update_demo(id: i32, form: UpdateForm) -> ResultWarp<impl Reply> {
+    log::debug!("修改demo单条数据");
+    let update = demo_model::update(id, form);
+    response_json(warp::http::StatusCode::OK, Some(&update), None)
+}
+
 pub async fn delete_demo(id: i32) -> ResultWarp<impl Reply> {
     log::debug!("删除demo单条数据");
     let delete_count = demo_model::delete(id);
