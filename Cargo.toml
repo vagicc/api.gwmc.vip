@@ -42,8 +42,6 @@ lazy_static = "1.4.0"
 # 基本用法: https://handlebarsjs.com/zh/guide/expressions.html#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95
 handlebars = "4.2.2"
 
-lazy_static = "1.4.0"
-
 # 错误处理
 error-chain = "0.12.4"
 
