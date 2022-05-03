@@ -11,7 +11,8 @@ repository = "https://github.com/vagicc/www.xueyigou.cn"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version="1.17.0", features=["full"]}
+#tokio = { version="1.17.0", features=["full"]}
+tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread","fs"] }
 warp = { version = "0.3.2", features = ["tls","multipart"] }
 
 # diesel是Rust的ORM(对象关系映射器)和查询构建器
@@ -22,14 +23,24 @@ diesel = { version="1.4.8",features=["extras","postgres","r2d2"] }
 dotenv = "0.15.0"
 
 # json
-serde_json = "1.0.79"
-serde_derive = "1.0.136"
 serde = {version = "1.0.136", features = ["derive"] }
+serde_json = "1.0.79"
+# serde = {version = "1.0", features = ["derive"]}
+# serde_json = {version = "1.0"}
+serde_derive = "1.0.136"
 
 # 日志
 env_logger = "0.9.0"
 log = "0.4.16"
-chrono = "0.4.19"
+
+# 时间与日期 (带features = ["serde"],时间才能使用Deserialize, Serialize的特征)
+chrono = { version="0.4.19", features = ["serde"] }
+
+lazy_static = "1.4.0"
+
+# 模板-隔离RUST和HTML
+# 基本用法: https://handlebarsjs.com/zh/guide/expressions.html#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95
+handlebars = "4.2.2"
 
 lazy_static = "1.4.0"
 

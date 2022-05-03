@@ -7,6 +7,9 @@ mod filters;
 mod handlers;
 mod routes;
 mod db;
+mod schema;
+mod models;
+mod template;
 
 #[macro_use]
 extern crate diesel;
