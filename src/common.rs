@@ -114,3 +114,15 @@ where
         .header("Content-type", "application/json")
         .body(response_string))
 }
+
+/* 产生随机字符串 */
+pub fn random_key(len: usize) -> String {
+    use rand::distributions::Alphanumeric;
+    use rand::thread_rng;
+    use rand::Rng;
+    thread_rng()
+        .sample_iter(&Alphanumeric)
+        .map(char::from)
+        .take(len)
+        .collect()
+}

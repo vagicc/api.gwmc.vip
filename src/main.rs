@@ -10,6 +10,7 @@ mod db;
 mod schema;
 mod models;
 mod template;
+mod oauth;
 
 #[macro_use]
 extern crate diesel;

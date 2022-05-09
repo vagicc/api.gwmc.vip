@@ -125,3 +125,60 @@ pub async fn do_add(form: AddDemoForm) -> ResultWarp<impl Reply> {
 
     // Ok(warp::reply::html("新增成功"))  //返回html
 }
+
+pub async fn test_token(uid: i32) -> ResultWarp<impl Reply> {
+    log::debug!("来到了私有页面了!!");
+    Ok(warp::reply::html("新增成功")) //返回html
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct DemoLogin {
+    pub username: String,      //登录用户名
+    pub password: String,      //登录密码
+    pub grant_type: String, //说明：grant_type有password、client_credentials、refresh_token、authorization_code
+    pub client_id: String,  //登录客户端
+    pub client_secret: String, //客户端密钥
+}
+
+impl DemoLogin {
+    pub fn validate(&self) -> Result<Self, &'static str> {
+        if self.username.is_empty() {
+            return Err("username不能为空");
+        }
+        if self.password.len() < 2 {
+            return Err("password长度应大于2");
+        }
+        Ok(self.clone())
+    }
+}
+
+pub async fn demo_login(login: DemoLogin) -> ResultWarp<impl Reply> {
+    let validate = login.validate();
+    match validate {
+        Ok(form) => {
+            // 校验密码 ，得到用户ID
+            let user_id: i32 = 3;
+            // 通过用户ID，生成已登录token
+            use crate::oauth;
+            //先校验客户端
+            let check =
+                oauth::check_oauth_client(form.client_id, form.client_secret, form.grant_type);
+            if !check {
+                println!("客户端验证不通过，不能登录");
+            }
+            let token = oauth::new_token(user_id);
+
+            /* 返回JSON，并且设置了状态码与头 */
+            return Ok(warp::http::Response::builder()
+                .status(warp::http::StatusCode::OK)
+                .header("Content-type", "application/json")
+                .body(serde_json::to_string(&token).unwrap()));
+        }
+        Err(e) => {
+            return Ok(warp::http::Response::builder()
+                .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                .header("Content-type", "application/json")
+                .body(e.to_string()));
+        }
+    }
+}
