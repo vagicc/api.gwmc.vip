@@ -127,8 +127,19 @@ pub async fn do_add(form: AddDemoForm) -> ResultWarp<impl Reply> {
 }
 
 pub async fn test_token(uid: i32) -> ResultWarp<impl Reply> {
-    log::debug!("来到了私有页面了!!");
-    Ok(warp::reply::html("新增成功")) //返回html
+    log::debug!("来到了私有页面了!!user_id:{}", uid);
+
+    Ok(warp::reply::html("token验证通过，有权限访问")) //返回html
+}
+
+// {
+//     "error": "invalid_grant",
+//     "error_description": "Invalid username and password combination"
+// }
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ErrorMessage {
+    pub error: String,
+    pub error_description: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -148,6 +159,12 @@ impl DemoLogin {
         if self.password.len() < 2 {
             return Err("password长度应大于2");
         }
+        if self.grant_type.is_empty() {
+            return Err("grant_type不能为空");
+        }
+        if self.client_id.is_empty() {
+            return Err("client_id不能为空");
+        }
         Ok(self.clone())
     }
 }
@@ -157,16 +174,27 @@ pub async fn demo_login(login: DemoLogin) -> ResultWarp<impl Reply> {
     match validate {
         Ok(form) => {
             // 校验密码 ，得到用户ID
-            let user_id: i32 = 3;
+            let user_id: i32 = 38;
             // 通过用户ID，生成已登录token
             use crate::oauth;
             //先校验客户端
-            let check =
+            let client =
                 oauth::check_oauth_client(form.client_id, form.client_secret, form.grant_type);
-            if !check {
-                println!("客户端验证不通过，不能登录");
+            if client.is_none() {
+                log::debug!("客户端验证不通过,登录失败");
+                let response = ErrorMessage {
+                    error: "客户端验证".to_string(),
+                    error_description: "客户端验证不通过,登录失败".to_string(),
+                };
+                return Ok(warp::http::Response::builder()
+                    .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                    .header("Content-type", "application/json")
+                    .body(serde_json::to_string(&response).unwrap()));
             }
-            let token = oauth::new_token(user_id);
+
+            let client = client.unwrap();
+
+            let token = oauth::new_token(user_id, &client);
 
             /* 返回JSON，并且设置了状态码与头 */
             return Ok(warp::http::Response::builder()
@@ -175,10 +203,112 @@ pub async fn demo_login(login: DemoLogin) -> ResultWarp<impl Reply> {
                 .body(serde_json::to_string(&token).unwrap()));
         }
         Err(e) => {
+            // return Ok(warp::http::Response::builder()
+            //     .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+            //     .header("Content-type", "application/json")
+            //     .body(e.to_string()));
+
+            let response = ErrorMessage {
+                error: e.to_string(),
+                error_description: e.to_string(),
+            };
             return Ok(warp::http::Response::builder()
                 .status(warp::http::StatusCode::MOVED_PERMANENTLY)
                 .header("Content-type", "application/json")
-                .body(e.to_string()));
+                .body(serde_json::to_string(&response).unwrap()));
         }
     }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct RefreshForm {
+    pub grant_type: String, //说明：grant_type有password、client_credentials、refresh_token、authorization_code
+    pub refresh_token: String,
+    pub client_id: String,     //登录客户端
+    pub client_secret: String, //客户端密钥
+}
+impl RefreshForm {
+    pub fn validate(&self) -> Result<Self, &'static str> {
+        if self.grant_type.is_empty() {
+            return Err("grant_type不能为空");
+        }
+        if !self.grant_type.eq("refresh_token") {
+            return Err("grant_type类型错误");
+        }
+        if self.refresh_token.is_empty() {
+            return Err("refresh_token不能为空");
+        }
+        if self.refresh_token.len() != 38 {
+            return Err("refresh_token长度不符合要求");
+        }
+        if self.client_id.is_empty() {
+            return Err("client_id不能为空");
+        }
+        Ok(self.clone())
+    }
+}
+
+pub async fn refresh_token(
+    token: warp::http::header::HeaderValue, //头部带的token
+    refresh_form: RefreshForm,
+) -> ResultWarp<impl Reply> {
+    log::debug!(
+        "用户请求刷新token！token:{:?},form:{:?}",
+        token,
+        refresh_form
+    );
+
+    match refresh_form.validate() {
+        Ok(form) => {
+            use crate::oauth;
+            //先校验客户端
+            let client =
+                oauth::check_oauth_client(form.client_id, form.client_secret, form.grant_type);
+            if client.is_none() {
+                log::debug!("客户端验证不通过,刷新token失败");
+            }
+
+            let client = client.unwrap();
+
+            let old_token = match std::str::from_utf8(token.as_bytes()) {
+                Ok(token) => token.trim_start_matches("Bearer "),
+                Err(_) => "",
+            };
+
+            match oauth::refresh(form.refresh_token, old_token, &client) {
+                Ok(new_token) => {
+                    return Ok(warp::http::Response::builder()
+                        .status(warp::http::StatusCode::OK)
+                        .header("Content-type", "application/json")
+                        .body(serde_json::to_string(&new_token).unwrap()))
+                }
+                Err(message) => {
+                    let response = ErrorMessage {
+                        error: message.to_string(),
+                        error_description: message.to_string(),
+                    };
+                    return Ok(warp::http::Response::builder()
+                        .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                        .header("Content-type", "application/json")
+                        .body(serde_json::to_string(&response).unwrap()));
+                    // return Ok(warp::http::Response::builder()
+                    //     .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                    //     .header("Content-type", "application/json")
+                    //     .body(message.to_string()))
+                }
+            }
+        }
+        Err(e) => {
+            let response = ErrorMessage {
+                error: e.to_string(),
+                error_description: e.to_string(),
+            };
+            return Ok(warp::http::Response::builder()
+                .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                .header("Content-type", "application/json")
+                .body(serde_json::to_string(&response).unwrap()));
+        }
+    }
+
+    // Ok(warp::reply::html("新增成功")) //返回html
 }

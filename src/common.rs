@@ -126,3 +126,17 @@ pub fn random_key(len: usize) -> String {
         .take(len)
         .collect()
 }
+
+pub fn now_naive_date_time()->chrono::NaiveDateTime{
+    // use chrono::prelude::{Local, NaiveDate, NaiveDateTime};
+    let fmt = "%Y-%m-%d %H:%M:%S";
+    let now = chrono::prelude::Local::now();
+    let dft = now.format(fmt);
+    let str_date = dft.to_string();
+    // println!("当前时间：{}", str_date);
+    let now_date_time =
+        chrono::prelude::NaiveDateTime::parse_from_str(str_date.as_str(), fmt).unwrap();
+    // let now_date = chrono::prelude::NaiveDate::parse_from_str(str_date.as_str(), "%Y-%m-%d").unwrap();
+
+    return now_date_time;
+}

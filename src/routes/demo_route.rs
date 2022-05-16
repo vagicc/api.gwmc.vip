@@ -16,7 +16,8 @@ pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
         .or(delete())
         .or(update())
         .or(test_token())
-        .or(demo_login());
+        .or(demo_login())
+        .or(refresh_token());
     demo_all
 }
 
@@ -98,4 +99,15 @@ pub fn demo_login() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rej
         .and(warp::path::end())
         .and(warp::body::form())
         .and_then(demo_handler::demo_login)
+}
+
+pub fn refresh_token() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    let refresh = warp::post()
+        .and(warp::path!("demo" / "refresh_token"))
+        .and(warp::path::end())
+        .and(warp::header::value("Authorization"))
+        .and(warp::body::form())
+        .and_then(demo_handler::refresh_token);
+     
+    refresh
 }
