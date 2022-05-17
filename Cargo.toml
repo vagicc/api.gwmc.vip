@@ -29,6 +29,9 @@ serde_json = "1.0.79"
 # serde_json = {version = "1.0"}
 serde_derive = "1.0.136"
 
+# JWT 鉴权整合
+jsonwebtoken = "8.1.0"
+
 # 日志
 env_logger = "0.9.0"
 log = "0.4.16"
@@ -44,6 +47,13 @@ handlebars = "4.2.2"
 
 # 错误处理
 error-chain = "0.12.4"
+
+# 随机
+rand = "0.8.5"
+
+#sha1加密
+# sha1 = "0.10.1"  //用这个会报错
+sha1 = "0.6.0"
 
 reqwest = { version="0.11.10",features=["socks","json","blocking","cookies","gzip","brotli","multipart","deflate"]}
 

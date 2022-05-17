@@ -14,7 +14,11 @@ pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
         .or(add())
         .or(do_add())
         .or(delete())
-        .or(update());
+        .or(update())
+        .or(test_token())
+        .or(do_signup())
+        .or(demo_login())
+        .or(refresh_token());
     demo_all
 }
 
@@ -78,4 +82,42 @@ pub fn update() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejecti
         .and(warp::body::form())
         .and_then(demo_handler::update_demo);
     update
+}
+
+pub fn test_token() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    let test = warp::get()
+        .and(warp::path!("demo" / "check_token"))
+        .and(crate::oauth::auth())
+        .and(warp::path::end())
+        .and_then(demo_handler::test_token);
+    test
+}
+
+// 测试注册
+pub fn do_signup() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::post()
+        .and(warp::path!("demo" / "signup"))
+        .and(warp::path::end())
+        .and(warp::body::form())
+        .and_then(demo_handler::demo_do_signup)
+}
+
+// 测试登录产生token
+pub fn demo_login() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::post()
+        .and(warp::path!("demo" / "login"))
+        .and(warp::path::end())
+        .and(warp::body::form())
+        .and_then(demo_handler::demo_login)
+}
+
+pub fn refresh_token() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    let refresh = warp::post()
+        .and(warp::path!("demo" / "refresh_token"))
+        .and(warp::path::end())
+        .and(warp::header::value("Authorization"))
+        .and(warp::body::form())
+        .and_then(demo_handler::refresh_token);
+
+    refresh
 }
