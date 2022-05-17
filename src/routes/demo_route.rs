@@ -16,6 +16,7 @@ pub fn all() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection>
         .or(delete())
         .or(update())
         .or(test_token())
+        .or(do_signup())
         .or(demo_login())
         .or(refresh_token());
     demo_all
@@ -92,6 +93,15 @@ pub fn test_token() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rej
     test
 }
 
+// 测试注册
+pub fn do_signup() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+    warp::post()
+        .and(warp::path!("demo" / "signup"))
+        .and(warp::path::end())
+        .and(warp::body::form())
+        .and_then(demo_handler::demo_do_signup)
+}
+
 // 测试登录产生token
 pub fn demo_login() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::post()
@@ -108,6 +118,6 @@ pub fn refresh_token() -> impl Filter<Extract = impl warp::Reply, Error = warp::
         .and(warp::header::value("Authorization"))
         .and(warp::body::form())
         .and_then(demo_handler::refresh_token);
-     
+
     refresh
 }

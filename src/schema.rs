@@ -65,14 +65,14 @@ table! {
 }
 
 table! {
-    oauth_users (username) {
-        username -> Bpchar,
-        password -> Nullable<Varchar>,
-        first_name -> Nullable<Varchar>,
-        last_name -> Nullable<Varchar>,
-        email -> Nullable<Varchar>,
-        email_verified -> Nullable<Int2>,
+    oauth_users (user_id) {
+        user_id -> Int4,
+        username -> Varchar,
+        password -> Varchar,
+        salt -> Nullable<Bpchar>,
         scope -> Nullable<Varchar>,
+        create_time -> Nullable<Timestamp>,
+        last_login -> Nullable<Timestamp>,
     }
 }
 

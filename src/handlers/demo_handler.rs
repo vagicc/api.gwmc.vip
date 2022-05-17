@@ -1,5 +1,6 @@
 use crate::common::response_json;
 use crate::models::demo_model;
+use crate::models::oauth_users_model;
 use crate::template::to_html_single;
 use handlebars::to_json;
 use serde::{Deserialize, Serialize};
@@ -169,12 +170,90 @@ impl DemoLogin {
     }
 }
 
+#[derive(Debug, Deserialize, Clone)]
+pub struct SignupForm {
+    pub username: String,
+    pub password: String,
+    pub passwd: String,
+}
+impl SignupForm {
+    pub fn validate(&self) -> Result<Self, &'static str> {
+        if self.username.is_empty() {
+            Err("手机号不能为空")
+        } else if self.password.is_empty() {
+            Err("密码不能为空")
+        } else if self.password.len() < 5 || self.passwd.len() < 5 {
+            Err("密码与确认密码的长度不能小于5位")
+        } else if self.password != self.passwd {
+            Err("密码与确认密码必须一致")
+        } else {
+            Ok(self.clone())
+        }
+    }
+}
+// 处理注册
+pub async fn demo_do_signup(form: SignupForm) -> ResultWarp<impl Reply> {
+    log::debug!("开始处理注册");
+    match form.validate() {
+        Ok(signup) => {
+            let salt = oauth_users_model::get_new_salt();
+            let pwd = oauth_users_model::encryption(&signup.passwd, &salt);
+
+            let mut new_users = oauth_users_model::OAuthUsers {
+                user_id: 8,
+                username: signup.username,
+                password: pwd,
+                salt: Some(salt),
+                scope: None,
+                create_time: None,
+                last_login: None,
+            };
+            let _tem = new_users.insert();
+        }
+        Err(message) => {
+            println!("{:?}", message);
+        }
+    }
+
+    Ok(warp::reply::html("注册成功")) //返回html
+}
+
 pub async fn demo_login(login: DemoLogin) -> ResultWarp<impl Reply> {
     let validate = login.validate();
     match validate {
         Ok(form) => {
             // 校验密码 ，得到用户ID
-            let user_id: i32 = 38;
+            let users = oauth_users_model::get_oauth_user(form.username);
+            if users.is_none() {
+                let response = ErrorMessage {
+                    error: "无此用户".to_string(),
+                    error_description: "查无此用户,登录失败".to_string(),
+                };
+                return Ok(warp::http::Response::builder()
+                    .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                    .header("Content-type", "application/json")
+                    .body(serde_json::to_string(&response).unwrap()));
+            }
+
+            let users = users.unwrap();
+
+            /* 判断用户密码 */
+            let pwd = oauth_users_model::encryption(
+                &form.password,
+                &users.salt.unwrap_or("".to_string()),
+            );
+            if !pwd.eq(&users.password) {
+                let response = ErrorMessage {
+                    error: "用户密码不正确".to_string(),
+                    error_description: "用户错误，请重新输入用户与密码".to_string(),
+                };
+                return Ok(warp::http::Response::builder()
+                    .status(warp::http::StatusCode::MOVED_PERMANENTLY)
+                    .header("Content-type", "application/json")
+                    .body(serde_json::to_string(&response).unwrap()));
+            }
+
+            let user_id: i32 = users.user_id;
             // 通过用户ID，生成已登录token
             use crate::oauth;
             //先校验客户端

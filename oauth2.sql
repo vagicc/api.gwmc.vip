@@ -78,13 +78,16 @@ COMMENT ON TABLE oauth_scopes IS 'oauth_scopes表';
 
 CREATE TABLE oauth_users(
     "user_id" SERIAL PRIMARY KEY,
+    "username" CHARACTER VARYING(58) NOT NULL,
     "password" CHARACTER VARYING(40) NOT NULL,
     "salt" CHARACTER(10) DEFAULT NULL,
-    "scope" CHARACTER VARYING(80) DEFAULT NULL
+    "scope" CHARACTER VARYING(80) DEFAULT NULL,
     "create_time" TIMESTAMP WITHOUT time ZONE DEFAULT clock_timestamp(),
     "last_login" TIMESTAMP WITHOUT time ZONE DEFAULT clock_timestamp()  
 );
+CREATE UNIQUE INDEX idx_oauth_users_username ON oauth_users USING btree(username);
 COMMENT ON TABLE oauth_users IS '用户登录信息表';
+COMMENT ON COLUMN oauth_users.username IS '登录用户名';
 
 -- postgres oauth2  end
 
