@@ -12,7 +12,7 @@ repository = "https://github.com/vagicc/www.xueyigou.cn"
 
 [dependencies]
 #tokio = { version="1.17.0", features=["full"]}
-tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread","fs"] }
+tokio = { version = "1.19.2", features = ["macros", "rt-multi-thread","fs"] }
 warp = { version = "0.3.2", features = ["tls","multipart"] }
 
 # diesel是Rust的ORM(对象关系映射器)和查询构建器

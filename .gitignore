@@ -1,3 +1,4 @@
 /target
 .env
 migrations/.gitkeep
+static/auto_club

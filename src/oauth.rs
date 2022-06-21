@@ -253,7 +253,7 @@ async fn authorize(headers: HeaderMap<HeaderValue>) -> Result<i32, warp::Rejecti
     let token = from_header(&headers);
     match token {
         Some(token) => {
-            log::debug!("头带有token");
+            log::debug!("头带有token:{}", token);
             /* 通过头token去查表里的token,判断是否在有效期内 */
             if let Some((user_id, expires)) = get_user_and_expires(token) {
                 //放在这里校验token是否过了有效时间？？   -----------------=================这里还没有做=========----
