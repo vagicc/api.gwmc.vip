@@ -85,3 +85,7 @@ luck@HP-ENVY-x360:~/Code/Rust/api_gwmc_vip$
 # ==========
 原则上一个开发人员只能提交一个个人开发分支到线上
 
+---------------------
+生产环境运行时重定向日志：
+cargo run >> log.txt 2>>error.txt
+

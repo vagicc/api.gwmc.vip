@@ -27,6 +27,7 @@ async fn main() {
     env_logger::Builder::new()
         .format(crate::format_logger::formatlog)
         .filter(None, log_level)
+        .target(env_logger::Target::Stdout)  //添加这行可以重定向日志
         .init();
 
     let routes = filters::all_routes();
